@@ -1,0 +1,63 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           perceptual-hash
+version:        0
+license:        BSD-2-Clause
+build-type:     Simple
+
+library
+  exposed-modules:
+      PerceptualHash
+  other-modules:
+      Paths_perceptual_hash
+  autogen-modules:
+      Paths_perceptual_hash
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -O2
+  build-depends:
+      JuicyPixels
+    , base
+    , bytestring
+    , vector
+  default-language: GHC2021
+
+executable perceptual-hash
+  main-is: Main.hs
+  other-modules:
+      Paths_perceptual_hash
+  autogen-modules:
+      Paths_perceptual_hash
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -O2
+  build-depends:
+      JuicyPixels
+    , base
+    , bytestring
+    , perceptual-hash
+    , vector
+  default-language: GHC2021
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_perceptual_hash
+  autogen-modules:
+      Paths_perceptual_hash
+  hs-source-dirs:
+      test
+  ghc-options: -Wall
+  build-depends:
+      JuicyPixels
+    , base
+    , bytestring
+    , hspec
+    , perceptual-hash
+    , vector
+  default-language: GHC2021

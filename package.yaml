@@ -1,0 +1,32 @@
+license: BSD-2-Clause
+name: "perceptual-hash"
+language: GHC2021
+version: 0
+dependencies:
+  - base
+  - bytestring
+  - JuicyPixels
+  - vector
+
+ghc-options:
+  - -Wall
+
+library:
+  source-dirs: src
+  ghc-options: -O2
+
+executable:
+  source-dirs: app
+  main: Main.hs
+  ghc-options: -O2
+  dependencies:
+    - base
+    - perceptual-hash
+
+tests:
+  test:
+    main: Spec.hs
+    source-dirs: test
+    dependencies:
+      - hspec
+      - perceptual-hash
