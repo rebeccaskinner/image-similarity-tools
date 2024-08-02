@@ -11,6 +11,10 @@ build-type:     Simple
 
 library
   exposed-modules:
+      Codec.Picture.Colorspace
+      Codec.Picture.DCT
+      Codec.Picture.Resize
+      Data.Vector.MatrixTools
       PerceptualHash
   other-modules:
       Paths_perceptual_hash
