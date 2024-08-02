@@ -1,1 +1,6 @@
 TAGS
+.direnv
+.envrc
+dist-newstyle
+result
+test-data
