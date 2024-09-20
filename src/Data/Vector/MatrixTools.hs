@@ -20,3 +20,7 @@ applyToRows f stride values
 applySeparable :: (Vector a -> Vector a) -> (Int,Int) -> (Int,Int) -> Vector a -> Vector a
 applySeparable f (inX, outX) (inY, outY) =
   transpose outY . applyToRows f inY . transpose outX . applyToRows f inX
+
+takeTopLeft :: Vector a -> Int -> (Int, Int) -> Vector a
+takeTopLeft v stride (x, y) =
+  mconcat [Vec.slice rowStart x v | rowStart <- take y [0, stride ..]]

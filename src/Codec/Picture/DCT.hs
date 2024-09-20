@@ -10,39 +10,36 @@ import Data.Vector qualified as Vec
 import Data.Vector.Storable qualified as StorableVec
 import Data.Word
 
-dct :: Vector Word8 -> Vector Word8
+dct :: Vector Double -> Vector Double
 dct input = Vec.generate inputLen dctVal
   where
     inputLen = Vec.length input
-    scale = pi / fromIntegral inputLen
-    components = Vec.imap (\i v -> fromIntegral i * fromIntegral v) input
-    dctVal i =
-      let val = fromIntegral $ input Vec.! i
-          j = 0.5 + fromIntegral i
-      in round . Vec.sum $ Vec.map (\x -> val * cos (j * x)) components
+    p = pi / fromIntegral inputLen
+    componentAt n k xn = xn * cos (p * (n + 0.5) * k)
+    dctVal k = Vec.sum $ Vec.imap (\n xn -> componentAt (fromIntegral n) (fromIntegral k) xn) input
 
-idct :: Vector Word8 -> Vector Word8
-idct input = Vec.generate inputLen idctVal
-  where
-    firstElem = Vec.singleton $ (input Vec.! 0) `div` 2
-    inputLen = Vec.length input
-    scale = pi / fromIntegral inputLen
-    components = Vec.imap (\i v -> fromIntegral i * fromIntegral v) input
-    idctVal i =
-      let val = fromIntegral $ input Vec.! i
-          j = 0.5 + fromIntegral i
-      in round . Vec.sum $ Vec.map (\x -> val * cos (j * x)) components
-
-dct2D :: Int -> Int -> Vector Word8 -> Vector Word8
+dct2D :: Int -> Int -> Vector Double -> Vector Double
 dct2D x y = applySeparable dct (x, x) (y, y)
 
-idct2D :: Int -> Int -> Vector Word8 -> Vector Word8
+dctImage :: Image Pixel8 -> Vector Double
+dctImage (Image x y inputVals) =
+  dct2D x y . Vec.map fromIntegral . StorableVec.convert $ inputVals
+
+idct :: Vector Double -> Vector Double
+idct input = Vec.generate inputLen dctVal
+  where
+    scaleFactor = 2 / fromIntegral inputLen
+    inputLen = Vec.length input
+    p = pi / fromIntegral inputLen
+    componentAt 0 k xn = 0.5 * xn
+    componentAt n k xn = xn * cos(p * (k + 0.5) * n)
+    componentAt' n k =
+      componentAt (fromIntegral n) (fromIntegral k)
+    dctVal k = (* scaleFactor) . Vec.sum . Vec.imap (`componentAt'` k) $ input
+
+idct2D :: Int -> Int -> Vector Double -> Vector Double
 idct2D x y = applySeparable idct (x, x) (y, y)
 
-dctImage :: Image Pixel8 -> Image Pixel8
-dctImage (Image x y inputVals) =
-  Image x y (StorableVec.convert . dct2D x y . StorableVec.convert $ inputVals)
-
-idctImage :: Image Pixel8 -> Image Pixel8
+idctImage :: Image Pixel8 -> Vector Double
 idctImage (Image x y inputVals) =
-  Image x y (StorableVec.convert . idct2D x y . StorableVec.convert $ inputVals)
+  idct2D x y . Vec.map fromIntegral . StorableVec.convert $ inputVals
