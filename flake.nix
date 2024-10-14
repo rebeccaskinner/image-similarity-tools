@@ -11,10 +11,13 @@
         shellEnv = import ./default.nix { inherit pkgs hsPkgs;  returnShellEnv = true; };
         lib = import ./default.nix { inherit pkgs hsPkgs; returnShellEnv = false; };
       in {
-
         packages.default = lib;
         devShells.default = pkgs.mkShell {
           inputsFrom = [shellEnv];
+          buildInputs = lib.buildInputs;
+          shellHook = ''
+            cabal update
+          '';
         };
       });
   nixConfig.bash-prompt = "\\u@\\h:\\W (nix) λ ";

@@ -1,6 +1,6 @@
 cabal-version: 2.2
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.36.1.
 --
 -- see: https://github.com/sol/hpack
 
@@ -13,8 +13,12 @@ library
   exposed-modules:
       Codec.Picture.Colorspace
       Codec.Picture.DCT
+      Codec.Picture.ImageConversions
       Codec.Picture.Resize
+      Data.Bits.Sequence
+      Data.PerceptualHash
       Data.Vector.MatrixTools
+      Data.Vector.Sized
       PerceptualHash
   other-modules:
       Paths_perceptual_hash

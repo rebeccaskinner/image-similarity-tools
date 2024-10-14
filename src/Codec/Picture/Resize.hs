@@ -2,17 +2,23 @@
 {-# OPTIONS_GHC -Wno-unused-imports #-}
 {-# OPTIONS_GHC -Wno-unused-local-binds #-}
 {-# OPTIONS_GHC -Wno-unused-matches #-}
+{-# LANGUAGE DataKinds #-}
 module Codec.Picture.Resize where
 import Control.Monad.ST
 import Data.Ratio
 import Data.Foldable
 import Data.Word
 import Data.Vector (Vector)
+import Data.Vector.Sized (SizedVector)
+import Data.Vector.Sized qualified as SizedVec
 import Data.Vector qualified as Vec
 import Data.Vector.MatrixTools
 import Data.Vector.Storable qualified as StorableVec
 import Text.Printf
 import Codec.Picture
+import Data.Vector.Sized qualified as SizedVec
+import Data.Vector.Sized (SizedVector2D)
+import GHC.TypeLits
 
 newtype ScaleFactor = ScaleFactor { getScaleFactor :: Ratio Int }
 data ImageSize = ImageSize { imageWidth :: Int, imageHeight :: Int }
