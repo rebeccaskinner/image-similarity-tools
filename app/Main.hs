@@ -3,13 +3,14 @@ import PerceptualHash
 import Data.PerceptualHash
 import System.Environment (getArgs)
 
-liftEither :: Either String a -> IO a
-liftEither (Left err) = ioError $ userError err
-liftEither (Right val) = pure val
+liftEither :: IO (Either String a) -> IO a
+liftEither val = do
+  Right val' <- val
+  pure val'
 
 main :: IO ()
 main = do
   [inFname, outFname] <- getArgs
-  roundTripImageFile inFname outFname
+  roundtripImageFile inFname outFname
   phash <- liftEither $ perceptualHashFile inFname
   putStrLn $ inFname <> ":" <> showHex phash

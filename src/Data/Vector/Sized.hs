@@ -2,6 +2,7 @@
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE ConstraintKinds #-}
 module Data.Vector.Sized where
 import Prelude hiding (take, map)
 import Data.Vector (Vector)
@@ -10,8 +11,7 @@ import Data.Kind
 import GHC.TypeLits
 import Data.Proxy
 
-class DivisibleBy (a :: Natural) (b :: Natural)
-instance (a `Mod` b ~ 0) => DivisibleBy a b
+type DivisibleBy a b = (a `Mod` b ~ 0)
 
 newtype SizedVector (size :: Natural) (elem :: Type) =
   SizedVector { fromSizedVector :: Vector elem }

@@ -5,7 +5,6 @@ import Data.Bits
 import Data.Word
 import Text.Printf
 import Text.Read
-import Data.Vector (Vector)
 import Data.Vector.Sized (SizedVector2D)
 import Data.Vector qualified as Vec
 import Data.Vector.Sized qualified as SizedVec
