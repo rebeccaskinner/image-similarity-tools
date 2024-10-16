@@ -29,6 +29,11 @@ index ::
   SizedVector size elem -> elem
 index (SizedVector vec) = vec Vec.! natInt @ix
 
+unsafeIndex :: forall size elem. KnownNat size => SizedVector size elem -> Int -> elem
+unsafeIndex (SizedVector vec) idx
+  | idx >= natInt @size = error "unsafeIndex: out of bounds"
+  | otherwise = vec Vec.! idx
+
 index2D ::
   forall ix iy elem sizeX sizeY .
   (KnownNat ix, KnownNat iy, KnownNat sizeX,
@@ -43,6 +48,14 @@ index2D (SizedVector2D vec) =
     offX = natInt @ix
     stride = natInt @sizeX
 
+unsafeIndex2D :: forall x y elem. (KnownNat x, KnownNat y) => SizedVector2D x y elem -> Int -> Int -> elem
+unsafeIndex2D (SizedVector2D vec) ix iy
+  | ix >= natInt @x || iy >= natInt @y = error "unsafeIndex2D: out of bounds"
+  | otherwise = vec Vec.! ix'
+  where
+    stride = natInt @x
+    ix' = iy * stride + ix
+
 imap :: (Int -> a -> b) -> SizedVector size a -> SizedVector size b
 imap f (SizedVector vec) = SizedVector (Vec.imap f vec)
 
@@ -54,6 +67,9 @@ sized2DtoVec = fromSizedVector2D
 
 natInt :: forall size. KnownNat size => Int
 natInt = fromIntegral . natVal $ Proxy @size
+
+natDouble :: forall size. KnownNat size => Double
+natDouble = fromIntegral . natVal $ Proxy @size
 
 sizedVector ::
   forall size elem. KnownNat size =>
@@ -69,6 +85,19 @@ generate ::
   (Int -> elem) ->
   SizedVector size elem
 generate f = SizedVector $ Vec.generate (natInt @size) f
+
+generate2D ::
+  forall sizeX sizeY elem.
+  (KnownNat sizeX, KnownNat sizeY) =>
+  (Int -> Int -> elem) ->
+  SizedVector2D sizeX sizeY elem
+generate2D f = SizedVector2D $ Vec.generate totalSize f'
+  where
+    totalSize = natInt @sizeX * natInt @sizeY
+    stride = natInt @sizeX
+    f' flatIdx =
+      let (y, x) = flatIdx `divMod` stride
+      in f x y
 
 sizedVector2D ::
   forall sizeX sizeY size elem. (size ~ sizeX * sizeY, KnownNat size) =>

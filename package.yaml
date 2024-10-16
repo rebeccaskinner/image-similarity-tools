@@ -6,19 +6,22 @@ dependencies:
   - base
   - bytestring
   - JuicyPixels
+  - JuicyPixels-extra
   - vector
+  - filepath
 
 ghc-options:
   - -Wall
+  - -O2
+  - -threaded
 
 library:
   source-dirs: src
-  ghc-options: -O2
 
 executable:
   source-dirs: app
   main: Main.hs
-  ghc-options: -O2
+  ghc-options: -rtsopts -with-rtsopts=-N
   dependencies:
     - base
     - perceptual-hash

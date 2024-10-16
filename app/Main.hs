@@ -1,16 +1,19 @@
 module Main where
 import PerceptualHash
 import Data.PerceptualHash
+import Data.Foldable
+import System.FilePath
 import System.Environment (getArgs)
 
-liftEither :: IO (Either String a) -> IO a
-liftEither val = do
-  Right val' <- val
-  pure val'
+displayPerceptualHash :: FilePath -> FilePath -> IO ()
+displayPerceptualHash outDir fname = do
+  -- let basename = takeFileName fname
+  --     outname = outDir </> basename
+  -- roundtripImageFile fname outname
+  phash <- perceptualHashFile fname
+  putStrLn $ fname <> ":" <> showHex phash
 
 main :: IO ()
 main = do
-  [inFname, outFname] <- getArgs
-  roundtripImageFile inFname outFname
-  phash <- liftEither $ perceptualHashFile inFname
-  putStrLn $ inFname <> ":" <> showHex phash
+  (outDir:fnames) <- getArgs
+  traverse_ (displayPerceptualHash outDir) fnames

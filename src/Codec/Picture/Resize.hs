@@ -3,14 +3,13 @@
 {-# OPTIONS_GHC -Wno-unused-local-binds #-}
 {-# OPTIONS_GHC -Wno-unused-matches #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE NoStarIsType #-}
 module Codec.Picture.Resize where
 import Control.Monad.ST
 import Data.Ratio
 import Data.Foldable
 import Data.Word
 import Data.Vector (Vector)
-import Data.Vector.Sized (SizedVector)
-import Data.Vector.Sized qualified as SizedVec
 import Data.Vector qualified as Vec
 import Data.Vector.MatrixTools
 import Data.Vector.Storable qualified as StorableVec
@@ -19,6 +18,9 @@ import Codec.Picture
 import Data.Vector.Sized qualified as SizedVec
 import Data.Vector.Sized (SizedVector2D)
 import GHC.TypeLits
+import Codec.Picture.Extra
+import Codec.Picture.ImageConversions
+import Data.Maybe
 
 newtype ScaleFactor = ScaleFactor { getScaleFactor :: Ratio Int }
 data ImageSize = ImageSize { imageWidth :: Int, imageHeight :: Int }
@@ -81,6 +83,18 @@ resizeImage outSize@(ImageSize outX outY) (Image inX inY inputImg) =
   let inSize = ImageSize inX inY
       inputData = StorableVec.convert inputImg
   in Image outX outY (StorableVec.convert $ resizeImageData inSize outSize inputData)
+
+resizeDataBilinear ::
+  forall outX outY.
+  (KnownNat outX, KnownNat outY, KnownNat (outX * outY)) =>
+  Image Pixel8 ->
+  SizedVector2D outX outY Pixel8
+resizeDataBilinear img = fromJust . imageToSizedVector $ resizeImageBilinear outSize img
+  where
+    outSize = ImageSize (SizedVec.natInt @outX) (SizedVec.natInt @outY)
+
+resizeImageBilinear :: ImageSize -> Image Pixel8 -> Image Pixel8
+resizeImageBilinear outSize@(ImageSize outX outY) = scaleBilinear outX outY
 
 printKernel :: Vector Double -> IO ()
 printKernel = Vec.mapM_ (putStrLn . printf "%.6f")

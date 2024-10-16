@@ -11,34 +11,31 @@ import Data.Vector.Sized (SizedVector2D)
 import Codec.Picture.ImageConversions
 import Codec.Picture.DCT
 
-loadRGB :: FilePath -> IO (Either String (Image PixelRGB8))
-loadRGB = fmap (convertRGB8 <$>) . readImage
+loadRGB :: FilePath -> IO (Image PixelRGB8)
+loadRGB fname = do
+  dynImage <- readImage fname
+  case dynImage of
+    Left err -> ioError $ userError err
+    Right imgData -> pure $ convertRGB8 imgData
 
-preprocessImage :: Image PixelRGB8 -> Either String (SizedVector2D 64 64 Word8)
-preprocessImage = resizeFixed . desaturateLuminosity
-  where
-    resizeFixed img =
-      case imageToSizedVector $ resizeImage (ImageSize 64 64) img of
-        Nothing -> Left "Could not resize image"
-        Just vec -> Right vec
+preprocessImage :: Image PixelRGB8 -> SizedVector2D 64 64 Word8
+preprocessImage = resizeDataBilinear' . desaturateLuminosity
 
 discreteFourierTransform :: SizedVector2D 64 64 Word8 -> SizedVector2D 64 64 Double
 discreteFourierTransform = dct2D . fmap pixelToDouble
 
-roundtripImage :: Image PixelRGB8 -> Either String (Image Pixel8)
-roundtripImage img =
-  sizedVectorToImage . fmap doubleToPixel . idct2D . discreteFourierTransform <$> preprocessImage img
+roundtripImage :: Image PixelRGB8 -> Image Pixel8
+roundtripImage =
+  sizedVectorToImage . fmap doubleToPixel . idct2D . discreteFourierTransform . preprocessImage
 
 roundtripImageFile :: FilePath -> FilePath -> IO ()
-roundtripImageFile fnameIn fnameOut = do
-  imgData <- loadRGB fnameIn
-  case imgData >>= roundtripImage of
-    Left err -> ioError $ userError err
-    Right preprocessedImageData -> writePng fnameOut preprocessedImageData
+roundtripImageFile fnameIn fnameOut =
+  loadRGB fnameIn >>= writePng fnameOut . roundtripImage
 
-perceptualHashImage :: Image PixelRGB8 -> Either String PerceptualHash
-perceptualHashImage image =
-  perceptualHash . discreteFourierTransform <$> preprocessImage image
+perceptualHashImage :: Image PixelRGB8 -> PerceptualHash
+perceptualHashImage =
+  perceptualHash . discreteFourierTransform . preprocessImage
 
-perceptualHashFile :: FilePath -> IO (Either String PerceptualHash)
-perceptualHashFile fname = (>>= perceptualHashImage) <$> loadRGB fname
+perceptualHashFile :: FilePath -> IO PerceptualHash
+perceptualHashFile fname =
+  perceptualHashImage <$> loadRGB fname

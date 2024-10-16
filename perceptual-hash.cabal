@@ -26,11 +26,15 @@ library
       Paths_perceptual_hash
   hs-source-dirs:
       src
-  ghc-options: -Wall -O2
+  ghc-options: -Wall -O2 -threaded
   build-depends:
       JuicyPixels
+    , JuicyPixels-extra
+    , async
+    , async-pool
     , base
     , bytestring
+    , filepath
     , vector
   default-language: GHC2021
 
@@ -42,11 +46,15 @@ executable perceptual-hash
       Paths_perceptual_hash
   hs-source-dirs:
       app
-  ghc-options: -Wall -O2
+  ghc-options: -Wall -O2 -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       JuicyPixels
+    , JuicyPixels-extra
+    , async
+    , async-pool
     , base
     , bytestring
+    , filepath
     , perceptual-hash
     , vector
   default-language: GHC2021
@@ -60,11 +68,15 @@ test-suite test
       Paths_perceptual_hash
   hs-source-dirs:
       test
-  ghc-options: -Wall
+  ghc-options: -Wall -O2 -threaded
   build-depends:
       JuicyPixels
+    , JuicyPixels-extra
+    , async
+    , async-pool
     , base
     , bytestring
+    , filepath
     , hspec
     , perceptual-hash
     , vector
