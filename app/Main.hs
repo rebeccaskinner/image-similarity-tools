@@ -7,9 +7,9 @@ import System.Environment (getArgs)
 
 displayPerceptualHash :: FilePath -> FilePath -> IO ()
 displayPerceptualHash outDir fname = do
-  -- let basename = takeFileName fname
-  --     outname = outDir </> basename
-  -- roundtripImageFile fname outname
+  let basename = takeFileName fname
+      outname = outDir </> basename
+  roundtripImageFile fname outname
   phash <- perceptualHashFile fname
   putStrLn $ fname <> ":" <> showHex phash
 

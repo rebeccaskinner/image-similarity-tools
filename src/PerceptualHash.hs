@@ -10,6 +10,7 @@ import Data.Word
 import Data.Vector.Sized (SizedVector2D)
 import Codec.Picture.ImageConversions
 import Codec.Picture.DCT
+import Data.Maybe
 
 loadRGB :: FilePath -> IO (Image PixelRGB8)
 loadRGB fname = do
@@ -19,7 +20,9 @@ loadRGB fname = do
     Right imgData -> pure $ convertRGB8 imgData
 
 preprocessImage :: Image PixelRGB8 -> SizedVector2D 64 64 Word8
-preprocessImage = resizeDataBilinear' . desaturateLuminosity
+preprocessImage = fromJust . imageToSizedVector . desaturateLuminosity . resizeImageBilinear imgSize
+  where
+    imgSize = ImageSize 64 64
 
 discreteFourierTransform :: SizedVector2D 64 64 Word8 -> SizedVector2D 64 64 Double
 discreteFourierTransform = dct2D . fmap pixelToDouble

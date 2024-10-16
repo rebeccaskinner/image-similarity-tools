@@ -85,15 +85,21 @@ resizeImage outSize@(ImageSize outX outY) (Image inX inY inputImg) =
   in Image outX outY (StorableVec.convert $ resizeImageData inSize outSize inputData)
 
 resizeDataBilinear ::
-  forall outX outY.
-  (KnownNat outX, KnownNat outY, KnownNat (outX * outY)) =>
-  Image Pixel8 ->
-  SizedVector2D outX outY Pixel8
+  forall outX outY a.
+  ( KnownNat outX, KnownNat outY, KnownNat (outX * outY)
+  , Pixel a, Bounded (PixelBaseComponent a), Integral (PixelBaseComponent a)
+  ) =>
+  Image a ->
+  SizedVector2D outX outY (PixelBaseComponent a)
 resizeDataBilinear img = fromJust . imageToSizedVector $ resizeImageBilinear outSize img
   where
     outSize = ImageSize (SizedVec.natInt @outX) (SizedVec.natInt @outY)
 
-resizeImageBilinear :: ImageSize -> Image Pixel8 -> Image Pixel8
+resizeImageBilinear ::
+  (Pixel a, Bounded (PixelBaseComponent a), Integral (PixelBaseComponent a)) =>
+  ImageSize ->
+  Image a ->
+  Image a
 resizeImageBilinear outSize@(ImageSize outX outY) = scaleBilinear outX outY
 
 printKernel :: Vector Double -> IO ()
