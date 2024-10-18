@@ -16,6 +16,7 @@ library
       Codec.Picture.ImageConversions
       Codec.Picture.Resize
       Data.Bits.Sequence
+      Data.BKTree
       Data.PerceptualHash
       Data.Vector.MatrixTools
       Data.Vector.Sized
@@ -30,10 +31,9 @@ library
   build-depends:
       JuicyPixels
     , JuicyPixels-extra
-    , async
-    , async-pool
     , base
     , bytestring
+    , containers
     , filepath
     , vector
   default-language: GHC2021
@@ -50,10 +50,9 @@ executable perceptual-hash
   build-depends:
       JuicyPixels
     , JuicyPixels-extra
-    , async
-    , async-pool
     , base
     , bytestring
+    , containers
     , filepath
     , perceptual-hash
     , vector
@@ -72,10 +71,9 @@ test-suite test
   build-depends:
       JuicyPixels
     , JuicyPixels-extra
-    , async
-    , async-pool
     , base
     , bytestring
+    , containers
     , filepath
     , hspec
     , perceptual-hash
