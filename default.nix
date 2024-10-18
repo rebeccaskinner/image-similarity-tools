@@ -13,7 +13,10 @@ hsPkgs.developPackage {
   modifier = drv: pkgs.haskell.lib.overrideCabal drv (attrs:
     let
       prevTools = attrs.buildTools or [];
-      requiredTools = [];
-    in {buildTools = prevTools ++ requiredTools;});
+      requiredTools = [pkgs.ffmpeg];
+    in
+      { buildTools = prevTools ++ requiredTools;
+      }
+  );
   inherit returnShellEnv;
 }

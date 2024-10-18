@@ -31,3 +31,6 @@ showHex = printf "%016x" . getHashBits
 
 parseHex :: String -> Maybe PerceptualHash
 parseHex = fmap PerceptualHash . readMaybe
+
+perceptualHashDistance :: PerceptualHash -> PerceptualHash -> Int
+perceptualHashDistance a b = popCount $ a `xor` b

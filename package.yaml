@@ -9,6 +9,7 @@ dependencies:
   - JuicyPixels-extra
   - vector
   - filepath
+  - containers
 
 ghc-options:
   - -Wall
